@@ -3,8 +3,6 @@ import { Response, Request } from "express";
 import { validate } from "class-validator";
 import { User } from "../database";
 import { FormatUserRequest, FormatApiError, Constants } from "../helpers";
-
-type ErrorInfo = { path: string, message: string }
 export class UserController {
     static async signUp(request: Request, response: Response) {
         const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
@@ -24,6 +22,27 @@ export class UserController {
                 });
             }
         });
-        response.status((await promise).status).send((await promise).response)
+        return response.status((await promise).status).send((await promise).response)
     }
+
+    static async getUserDetails(request: Request, response: Response) {
+        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+            try {
+                FormatUserRequest(request.params, ["id"])
+                const userRepo = getRepository(User)
+                const result = await userRepo.findOne({ where: { id: request.params.id } })
+                    .catch(() => { console.log(Constants.DATA_NOT_FOUND) });
+                if (!result) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
+                return resolve({ status: 200, response: result })
+            } catch (error) {
+                const apiError = FormatApiError(error);
+                return resolve({
+                    status: apiError.code,
+                    response: apiError.body,
+                });
+            }
+        });
+        return response.status((await promise).status).send((await promise).response)
+    }
+
 }

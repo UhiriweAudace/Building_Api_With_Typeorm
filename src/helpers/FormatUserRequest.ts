@@ -1,4 +1,4 @@
-import {error as Constants} from "./Constants"
+import { error as Constants } from "./Constants"
 
 type ErrorInfo = { path: string, message: string }
 

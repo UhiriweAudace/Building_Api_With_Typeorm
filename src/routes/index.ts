@@ -4,6 +4,7 @@ import { UserController, BitcoinController } from "../controllers";
 const router = express.Router();
 
 router.post("/users", UserController.signUp);
+router.get("/users/:id", UserController.getUserDetails)
 router.put("/bitcoin", BitcoinController.UpdateBitcoin);
 router.get("/bitcoin", BitcoinController.getBitcoinDetails);
 

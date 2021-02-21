@@ -6,7 +6,7 @@
    "password": "RUHAr@00",
    "database": "substrata_db",
    "synchronize": true,
-   "logging": ["error"],
+   "logging": false,
    "logger":"advanced-console",
    "entities": [
       "src/entity/**/*.ts"
