@@ -10,7 +10,7 @@ const app: express.Application = express();
 
 app.use(express.json());
 
-app.use(AppRoutes.default);
+app.use(AppRoutes);
 
 createConnection().then(() => {
     console.log("[Database]: connected successfully!")

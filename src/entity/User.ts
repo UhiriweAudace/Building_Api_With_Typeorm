@@ -1,6 +1,6 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, Unique, OneToMany } from "typeorm";
 import { v4 as uuid } from "uuid";
-import { IsString, IsEmpty, IsInt } from "class-validator"
+import { IsString, IsNotEmpty, MinLength, IsEmail, IsAlphanumeric } from "class-validator"
 import { UsdTransfer } from "./UsdTransfer"
 import { BitcoinTransfer } from "./BitcoinTransfer";
 
@@ -12,26 +12,28 @@ export class User extends BaseEntity {
     id: string;
 
     @Column({ nullable: false })
+    @MinLength(3)
     @IsString()
-    @IsEmpty()
+    @IsNotEmpty()
     name: string;
 
     @Column({ unique: true, nullable: false })
+    @MinLength(3)
+    @IsAlphanumeric()
     @IsString()
-    @IsEmpty()
+    @IsNotEmpty()
     username: string;
 
     @Column({ nullable: false })
     @IsString()
+    @IsEmail({}, { message: "Email must be valid" })
     email: string;
 
     @Column({ type: "double precision", default: 0, nullable: false })
-    @IsInt()
     usdBalance: number;
 
     @Column({ type: "double precision", default: 0, nullable: false })
-    @IsInt()
-    bitcoinBalance: number;
+    bitcoinAmount: number;
 
     @CreateDateColumn()
     createdAt: Date

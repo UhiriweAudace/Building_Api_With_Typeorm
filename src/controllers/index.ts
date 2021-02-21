@@ -1,5 +1,4 @@
 import { UserController } from "./userController";
+import { BitcoinController } from "./bitcoinController";
 
-export {
-    UserController
-}
+export { UserController, BitcoinController }
