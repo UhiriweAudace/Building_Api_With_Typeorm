@@ -6,6 +6,8 @@ const router = express.Router();
 router.post("/users", UserController.signUp);
 router.get("/users/:id", UserController.getUserDetails);
 router.put("/users/:id", UserController.updateUserDetails);
+router.post("/users/:userId/usd", UserController.createUSDTransaction);
+
 router.put("/bitcoin", BitcoinController.UpdateBitcoin);
 router.get("/bitcoin", BitcoinController.getBitcoinDetails);
 

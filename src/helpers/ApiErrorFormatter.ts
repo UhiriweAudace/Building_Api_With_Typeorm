@@ -24,6 +24,9 @@ export const FormatApiError = error => {
         case E.DATA_NOT_FOUND:
             return { code: 404, body: { message: `${error.field} ${error.name}` } }
 
+        case E.INSUFFICIENT_BALANCE:
+            return { code: 422, body: { message: error.name, field: error.field } }
+
     }
 
     // Returns 500 the error can not be resolved

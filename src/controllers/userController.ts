@@ -1,7 +1,7 @@
 import { getRepository } from "typeorm"
 import { Response, Request } from "express";
 import { validate } from "class-validator";
-import { User } from "../database";
+import { UsdTransfer, User } from "../database";
 import { FormatUserRequest, FormatApiError, Constants } from "../helpers";
 export class UserController {
     static async signUp(request: Request, response: Response) {
@@ -48,6 +48,7 @@ export class UserController {
     static async updateUserDetails(request: Request, response: Response) {
         const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
             try {
+                FormatUserRequest(request.params, ["id"])
                 const values = FormatUserRequest(request.body, [])
                 const userRepo = getRepository(User)
                 const user = await userRepo.findOne({ where: { id: request.params.id } })
@@ -73,4 +74,44 @@ export class UserController {
         });
         return response.status((await promise).status).send((await promise).response)
     }
+
+    static async createUSDTransaction(request: Request, response: Response) {
+        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+            try {
+                FormatUserRequest(request.params, ["userId"]);
+                const values = FormatUserRequest(request.body, ["action", "amount"]);
+
+                const user = await User.findOne({ where: { id: request.params.userId } })
+                    .catch(() => { console.log(Constants.DATA_NOT_FOUND) });
+                if (!user) throw { name: Constants.DATA_NOT_FOUND, field: "User" };
+
+                const usdTransferRepo = getRepository(UsdTransfer);
+                const usdTransfer = usdTransferRepo.create(values);
+                const errors = await validate(usdTransfer);
+                if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
+
+                if (user.usdBalance < usdTransfer.amount && usdTransfer.action === "withdraw")
+                    throw { name: Constants.INSUFFICIENT_BALANCE, field: "amount" };
+
+                user.usdBalance =
+                    usdTransfer.action === "withdraw" ?
+                        Number(user.usdBalance) - Number(usdTransfer.amount) :
+                        usdTransfer.action === "deposit" ?
+                            Number(user.usdBalance) + Number(usdTransfer.amount) : 0;
+
+                await user.save();
+                usdTransfer.user = user
+                const result = await usdTransferRepo.save(usdTransfer).catch((err) => { throw new Error(err) });
+                return resolve({ status: 200, response: result })
+            } catch (error) {
+                const apiError = FormatApiError(error);
+                return resolve({
+                    status: apiError.code,
+                    response: apiError.body,
+                });
+            }
+        });
+        return response.status((await promise).status).send((await promise).response)
+    }
+
 }
