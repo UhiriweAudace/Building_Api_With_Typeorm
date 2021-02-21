@@ -2,8 +2,9 @@ import { getRepository } from "typeorm"
 import { Response, Request } from "express";
 import { validate } from "class-validator";
 import { v4 as uuid } from "uuid";
-import { BitcoinTransfer, UsdTransfer, User } from "../database";
+import { BitcoinPrice, BitcoinTransfer, UsdTransfer, User } from "../database";
 import { FormatUserRequest, FormatApiError, Constants } from "../helpers";
+import { AppConfig } from "../configs";
 export class UserController {
     static async signUp(request: Request, response: Response) {
         const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
@@ -151,4 +152,30 @@ export class UserController {
         return response.status((await promise).status).send((await promise).response)
     }
 
+    static async getUserBalance(request: Request, response: Response) {
+        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+            try {
+                FormatUserRequest(request.params, ["userId"])
+                const userRepo = getRepository(User)
+                const result = await userRepo.findOne({ where: { id: request.params.userId } })
+                    .catch(() => console.log(Constants.DATA_NOT_FOUND));
+                if (!result) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
+
+                const bitcoinPriceRepo = getRepository(BitcoinPrice);
+                const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
+                if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
+
+                const conversionPrice = bitcoin.price;
+                const totalBalance = Number(result.usdBalance) + (result.bitcoinAmount * conversionPrice)
+                return resolve({ status: 200, response: { total_balance: totalBalance } })
+            } catch (error) {
+                const apiError = FormatApiError(error);
+                return resolve({
+                    status: apiError.code,
+                    response: apiError.body,
+                });
+            }
+        });
+        return response.status((await promise).status).send((await promise).response)
+    }
 }

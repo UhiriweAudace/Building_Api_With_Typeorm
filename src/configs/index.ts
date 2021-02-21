@@ -8,6 +8,7 @@ const AppConfig = {
     appPort: process.env.APP_PORT,
     hostname: process.env.APP_HOST,
     appName: process.env.APP_NAME,
+    conversionBTCprice: process.env.CONVERSION_BTC_PRICE
 }
 
 const DatabaseConfig = (environment: string = "development") => {
