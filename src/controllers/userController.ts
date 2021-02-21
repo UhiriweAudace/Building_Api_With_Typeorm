@@ -45,4 +45,32 @@ export class UserController {
         return response.status((await promise).status).send((await promise).response)
     }
 
+    static async updateUserDetails(request: Request, response: Response) {
+        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+            try {
+                const values = FormatUserRequest(request.body, [])
+                const userRepo = getRepository(User)
+                const user = await userRepo.findOne({ where: { id: request.params.id } })
+                    .catch(() => { console.log(Constants.DATA_NOT_FOUND) });
+                if (!user) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
+
+                user.name = request.body.name || user.name;
+                user.username = request.body.username || user.username;
+                user.email = request.body.email || user.email
+                const errors = await validate(user);
+                if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
+
+                const result = await userRepo.save(user).catch((err) => { throw new Error(err) });
+                return resolve({ status: 200, response: result });
+            } catch (error) {
+                console.log(error.message)
+                const apiError = FormatApiError(error);
+                return resolve({
+                    status: apiError.code,
+                    response: apiError.body,
+                });
+            }
+        });
+        return response.status((await promise).status).send((await promise).response)
+    }
 }
