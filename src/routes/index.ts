@@ -5,9 +5,10 @@ const router = express.Router();
 
 router.post("/users", UserController.signUp);
 router.put("/bitcoin", BitcoinController.UpdateBitcoin);
+router.get("/bitcoin", BitcoinController.getBitcoinDetails);
 
 router.use("*", (request: express.Request, response: express.Response) => {
-    response.status(404).send({message:"Endpoint not found"})
+    response.status(404).send({ message: "Endpoint not found" })
 })
 
 export default router;

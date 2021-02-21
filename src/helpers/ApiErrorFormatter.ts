@@ -5,7 +5,7 @@ import { error as E } from "./Constants";
  * This method format the API Error Message
  * It accepts the error object.
  * @param   { String                     } error
- * @param   { Object(code, body          } Return object
+ * @returns   { Object(code, body   } 
  */
 export const FormatApiError = error => {
 
@@ -20,6 +20,9 @@ export const FormatApiError = error => {
         // Returns 400 if invalid request data was provided
         case E.INVALID_REQUEST_DATA:
             return { code: 400, body: { errors: FormatValidationError(error) } };
+
+        case E.DATA_NOT_FOUND:
+            return { code: 404, body: { message: `${error.field} ${error.name}` } }
 
     }
 
@@ -36,7 +39,10 @@ const FormatValidationError = (response: any) => {
     }
     if (response.name === E.INVALID_REQUEST_DATA) {
         return response.errors.map((error) => {
-            return { field: error.property, message: Object.entries(error.constraints)[0][1] }
+            return {
+                field: error.property,
+                message: Object.entries(error.constraints)[0][1]
+            }
         })
     }
     return error.map(object => {
