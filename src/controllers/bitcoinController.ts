@@ -1,30 +1,19 @@
 import { getRepository } from "typeorm"
 import { Response, Request } from "express";
 import { validate } from "class-validator";
-import { BitcoinPrice, User } from "../database";
-import { FormatApiError, Constants } from "../helpers";
+import { BitcoinPrice } from "../database";
+import { FormatApiError, Constants, FormatUserRequest } from "../helpers";
 
-type ErrorInfo = { path: string, message: string }
 export class BitcoinController {
     static async UpdateBitcoin(request: Request, response: Response) {
         const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
             try {
-
-                let fieldErrors: ErrorInfo[] = [];
-                ["price", "updatedAt"].forEach(field => {
-                    if (!Object.keys(request.body).includes(field)) {
-                        let error: ErrorInfo = { path: "", message: "" };
-                        error.path = field;
-                        error.message = ` ${field} is required`;
-                        fieldErrors.push(error)
-                    }
-                });
-                if (fieldErrors.length > 0) throw { name: Constants.INVALID_REQUEST_FORMAT, errors: fieldErrors };
+                const values = FormatUserRequest(request.body, ["price", "updatedAt"]);
                 const bitcoinRepo = getRepository(BitcoinPrice)
                 const bitcoinInfo = await bitcoinRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
                 let result;
                 if (!bitcoinInfo) {
-                    const bitcoin = bitcoinRepo.create({ ...request.body });
+                    const bitcoin = bitcoinRepo.create(values);
                     const errors = await validate(bitcoin);
                     if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
                     result = await bitcoinRepo.save(bitcoin).catch((err) => { throw new Error(err) });
