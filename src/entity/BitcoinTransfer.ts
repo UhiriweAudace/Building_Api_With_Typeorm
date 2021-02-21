@@ -1,5 +1,5 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, ManyToOne } from "typeorm";
-import { IsString, IsEmpty, IsInt, Matches } from "class-validator"
+import { IsString, IsNotEmpty, IsInt, Matches } from "class-validator"
 import { v4 as uuid } from "uuid";
 
 import { User } from "./User";
@@ -8,18 +8,19 @@ enum Action { sell = "sell", buy = "buy" }
 @Entity("BitcoinTransfers")
 export class BitcoinTransfer extends BaseEntity {
 
-  @PrimaryColumn({ type: "uuid",default: uuid(), nullable: false })
+  @PrimaryColumn({ type: "uuid", default: uuid(), nullable: false })
   id: string;
 
   @Column({ type: "double precision", nullable: false })
-  @IsEmpty()
+  @IsNotEmpty()
   @IsInt()
   amount: number;
 
   @Column({ type: "simple-enum", enum: Action, nullable: false, })
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
-  @Matches(`^${Object.values(Action).filter(v => typeof v !== "number").join('|')}$`, 'i')
+  @Matches(`^${Object.values(Action).filter(v => typeof v !== "number").join('|')}$`, 'i',
+    { message: "Action should be either sell or buy" })
   action: Action;
 
   @CreateDateColumn()

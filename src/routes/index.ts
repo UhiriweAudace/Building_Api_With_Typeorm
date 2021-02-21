@@ -10,6 +10,7 @@ router.post("/users/:userId/usd", UserController.createUSDTransaction);
 
 router.put("/bitcoin", BitcoinController.UpdateBitcoin);
 router.get("/bitcoin", BitcoinController.getBitcoinDetails);
+router.post("/users/:userId/bitcoins", UserController.createBitcoinTransaction);
 
 router.use("*", (request: express.Request, response: express.Response) => {
     response.status(404).send({ message: "Endpoint not found" })
