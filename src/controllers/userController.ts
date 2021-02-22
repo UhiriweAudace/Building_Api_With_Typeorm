@@ -93,14 +93,13 @@ export class UserController {
                 if (user.usdBalance < usdTransfer.amount && usdTransfer.action === "withdraw")
                     throw { name: Constants.INSUFFICIENT_BALANCE, field: "amount" };
 
-                user.usdBalance =
-                    usdTransfer.action === "withdraw" ?
-                        Number(user.usdBalance) - Number(usdTransfer.amount) :
-                        usdTransfer.action === "deposit" ?
-                            Number(user.usdBalance) + Number(usdTransfer.amount) : 0;
+                if (usdTransfer.action === "withdraw")
+                    user.usdBalance = ((user.usdBalance) - (usdTransfer.amount));
+                if (usdTransfer.action === "deposit")
+                    user.usdBalance = ((user.usdBalance) + (usdTransfer.amount));
 
                 await user.save();
-                const result = await usdTransferRepo.save({ ...usdTransfer, Id: uuid(), user: user }).catch((err) => { throw new Error(err) });
+                const result = await usdTransferRepo.save({ ...usdTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
@@ -136,11 +135,11 @@ export class UserController {
                 const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
                 if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
 
-                user.bitcoinAmount =
-                    bitcoinTransfer.action === "sell" ?
-                        Number(user.bitcoinAmount) - Number(bitcoinTransfer.amount) :
-                        bitcoinTransfer.action === "buy" ?
-                            Number(user.bitcoinAmount) + Number(bitcoinTransfer.amount) : 0;
+
+                if (bitcoinTransfer.action === "sell")
+                    user.bitcoinAmount = ((user.bitcoinAmount) - (bitcoinTransfer.amount))
+                if (bitcoinTransfer.action === "buy")
+                    user.bitcoinAmount = ((user.bitcoinAmount) + (bitcoinTransfer.amount));
 
                 await user.save();
                 const result = await bitcoinTransferRepo.save({ ...bitcoinTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
@@ -170,7 +169,7 @@ export class UserController {
                 if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
 
                 const conversionPrice = bitcoin.price;
-                const totalBalance = Number(result.usdBalance) + (result.bitcoinAmount * conversionPrice)
+                const totalBalance = ((result.usdBalance) + (result.bitcoinAmount * conversionPrice))
                 return resolve({ status: 200, response: { ...result, total_balance: totalBalance } })
             } catch (error) {
                 const apiError = FormatApiError(error);

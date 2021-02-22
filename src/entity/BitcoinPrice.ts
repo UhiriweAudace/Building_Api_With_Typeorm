@@ -12,7 +12,7 @@ export class BitcoinPrice extends BaseEntity {
     @IsNotEmpty()
     @Min(0)
     @IsInt()
-    price: number;
+    price: bigint;
 
     @CreateDateColumn()
     createdAt: Date

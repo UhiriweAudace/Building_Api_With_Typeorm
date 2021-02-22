@@ -14,7 +14,7 @@ export class BitcoinTransfer extends BaseEntity {
   @Column({ type: "double precision", nullable: false })
   @IsNotEmpty()
   @IsInt()
-  amount: number;
+  amount: bigint;
 
   @Column({ type: "simple-enum", enum: Action, nullable: false, })
   @IsNotEmpty()

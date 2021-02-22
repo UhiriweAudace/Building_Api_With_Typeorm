@@ -2,9 +2,9 @@ import "module-alias/register";
 import "reflect-metadata";
 import * as express from "express";
 
-import { AppConfig } from "@configs/"
 import AppRoutes from "@routes/";
-import { initConnection } from "./database";
+import { AppConfig } from "@configs/"
+import { initConnection } from "@database/";
 
 const app: express.Application = express();
 

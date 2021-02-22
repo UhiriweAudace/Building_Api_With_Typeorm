@@ -30,10 +30,10 @@ export class User extends BaseEntity {
     email: string;
 
     @Column({ type: "double precision", default: 0, nullable: false })
-    usdBalance: number;
+    usdBalance: bigint;
 
     @Column({ type: "double precision", default: 0, nullable: false })
-    bitcoinAmount: number;
+    bitcoinAmount: bigint;
 
     @CreateDateColumn()
     createdAt: Date
