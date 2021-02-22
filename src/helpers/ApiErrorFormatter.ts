@@ -14,10 +14,8 @@ export const FormatApiError = error => {
     switch (error.name) {
 
         // Returns 400 if invalid request format data was provided
-        case E.INVALID_REQUEST_FORMAT:
-            return { code: 400, body: { errors: FormatValidationError(error) } };
-
         // Returns 400 if invalid request data was provided
+        case E.INVALID_REQUEST_FORMAT:
         case E.INVALID_REQUEST_DATA:
             return { code: 400, body: { errors: FormatValidationError(error) } };
 

@@ -131,6 +131,11 @@ export class UserController {
                 if (user.bitcoinAmount < bitcoinTransfer.amount && bitcoinTransfer.action === "sell")
                     throw { name: Constants.INSUFFICIENT_BALANCE, field: "amount" };
 
+
+                const bitcoinPriceRepo = getRepository(BitcoinPrice);
+                const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
+                if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
+
                 user.bitcoinAmount =
                     bitcoinTransfer.action === "sell" ?
                         Number(user.bitcoinAmount) - Number(bitcoinTransfer.amount) :
@@ -156,7 +161,7 @@ export class UserController {
             try {
                 FormatUserRequest(request.params, ["userId"])
                 const userRepo = getRepository(User)
-                const result = await userRepo.findOne({ where: { id: request.params.userId } })
+                const result = await userRepo.findOne({ where: { id: request.params.userId }, select: ["id", "name", "usdBalance", "bitcoinAmount", "updatedAt"] })
                     .catch(() => console.log(Constants.DATA_NOT_FOUND));
                 if (!result) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
 
@@ -166,7 +171,7 @@ export class UserController {
 
                 const conversionPrice = bitcoin.price;
                 const totalBalance = Number(result.usdBalance) + (result.bitcoinAmount * conversionPrice)
-                return resolve({ status: 200, response: { total_balance: totalBalance } })
+                return resolve({ status: 200, response: { ...result, total_balance: totalBalance } })
             } catch (error) {
                 const apiError = FormatApiError(error);
                 return resolve({

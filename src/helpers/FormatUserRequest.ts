@@ -14,7 +14,7 @@ export const FormatUserRequest = (data, required = []) => {
             fieldErrors.push(error)
         }
     });
-    if (fieldErrors.length > 0) throw { name: Constants.INVALID_REQUEST_FORMAT, errors: fieldErrors };
+    if (fieldErrors.length) throw { name: Constants.INVALID_REQUEST_FORMAT, errors: fieldErrors };
 
     return values;
 };

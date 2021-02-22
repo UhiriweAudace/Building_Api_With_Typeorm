@@ -13,14 +13,13 @@ const AppConfig = {
 const DatabaseConfig = (environment: string = "development") => {
     environment = environment.toUpperCase();
     return {
-        dialect: <"postgres">process.env.DB_DRIVER,
+        type: process.env.DB_DRIVER as "postgres",
         host: process.env[`DB_${environment}_HOST`],
         port: Number(process.env[`DB_${environment}_PORT`]),
         username: process.env[`DB_${environment}_USERNAME`],
         password: process.env[`DB_${environment}_PASSWORD`],
         database: process.env[`DB_${environment}_NAME`],
         ssl: process.env[`DB_${environment}_SSL`] === 'TRUE',
-        dialectOptions: {},
     };
 };
 
