@@ -10,8 +10,9 @@
         npm install typeorm -g
     ```
 
-4. Run `npm run dev` command for development purpose 🔥
-5. now you send different request which listed on the challenge docs.
+4. Rename file called `.env.example` to `.env` and then assign each variable to its value
+5. Run `npm run dev` command for development purpose 🔥
+6. now you send different request which listed on the challenge docs.
 
 ## Authors
 
