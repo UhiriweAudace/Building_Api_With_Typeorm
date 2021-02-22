@@ -1,8 +1,8 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, Unique, OneToMany } from "typeorm";
 import { v4 as uuid } from "uuid";
 import { IsString, IsNotEmpty, MinLength, IsEmail, IsAlphanumeric } from "class-validator"
-import { UsdTransfer } from "./UsdTransfer"
-import { BitcoinTransfer } from "./BitcoinTransfer";
+import { UsdTransfer } from "@entity/UsdTransfer"
+import { BitcoinTransfer } from "@entity/BitcoinTransfer";
 
 @Entity("Users")
 @Unique(["username"])

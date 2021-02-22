@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { UserController, BitcoinController } from "../controllers";
+import { UserController, BitcoinController } from "@controllers/";
 
 const router = express.Router();
 

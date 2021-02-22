@@ -3,8 +3,8 @@ import "reflect-metadata";
 import { createConnection } from "typeorm";
 import * as express from "express";
 
-import { AppConfig } from "./configs"
-import AppRoutes from "./routes";
+import { AppConfig } from "@configs/"
+import AppRoutes from "@routes/";
 
 const app: express.Application = express();
 

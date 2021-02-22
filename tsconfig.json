@@ -1,12 +1,14 @@
 {
    "compilerOptions": {
-      "lib": [
-         "es5",
-         "es6"
-      ],
+      "lib": ["es5", "es6"],
+      "baseUrl": "./src",
       "paths": {
-         "#root":["./src/*"],
-         "#root/configs":["./src/configs/*"]
+         "@configs/*": ["./configs"],
+         "@routes/*": ["./routes"],
+         "@controllers/*": ["./controllers"],
+         "@database/*": ["./database"],
+         "@helpers/*": ["./helpers"],
+         "@entity/*": ["./entity/*"],
       },
       "target": "es6",
       "module": "commonjs",
