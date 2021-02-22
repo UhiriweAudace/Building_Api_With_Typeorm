@@ -2,9 +2,8 @@ import { getRepository } from "typeorm"
 import { Response, Request } from "express";
 import { validate } from "class-validator";
 import { v4 as uuid } from "uuid";
-import { BitcoinPrice, BitcoinTransfer, UsdTransfer, User } from "../database";
-import { FormatUserRequest, FormatApiError, Constants } from "../helpers";
-import { AppConfig } from "../configs";
+import { BitcoinPrice, BitcoinTransfer, UsdTransfer, User } from "@database/";
+import { FormatUserRequest, FormatApiError, Constants } from "@helpers/index";
 export class UserController {
     static async signUp(request: Request, response: Response) {
         const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {

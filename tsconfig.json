@@ -5,9 +5,9 @@
       "paths": {
          "@configs/*": ["./configs"],
          "@routes/*": ["./routes"],
-         "@controllers/*": ["./controllers"],
+         "@controllers/*": ["./controllers/*"],
          "@database/*": ["./database"],
-         "@helpers/*": ["./helpers"],
+         "@helpers/*": ["./helpers/*"],
          "@entity/*": ["./entity/*"],
       },
       "target": "es6",

@@ -1,8 +1,8 @@
 import { getRepository } from "typeorm"
 import { Response, Request } from "express";
 import { validate } from "class-validator";
-import { BitcoinPrice } from "../database";
-import { FormatApiError, Constants, FormatUserRequest } from "../helpers";
+import { BitcoinPrice } from "@database/";
+import { FormatApiError, Constants, FormatUserRequest } from "@helpers/index";
 
 export class BitcoinController {
     static async UpdateBitcoin(request: Request, response: Response) {

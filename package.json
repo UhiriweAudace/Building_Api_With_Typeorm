@@ -28,9 +28,9 @@
    "_moduleAliases": {
       "@configs": "src/configs",
       "@routes": "src/routes",
-      "@controllers": "src/controllers",
+      "@controllers": "src/controllers/",
       "@database": "src/database",
-      "@helpers": "src/helpers",
+      "@helpers": "src/helpers/",
       "@entity": "src/entity/"
    },
    "license": "MIT"
