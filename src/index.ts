@@ -10,11 +10,11 @@ const app: express.Application = express();
 
 app.use(express.json());
 
-app.use(AppRoutes);
-
-app.get("/api", (request, response) => {
+app.use("/api", (request, response) => {
     return response.status(200).send({ message: 'Welcome to substrata Api' })
 });
+
+app.use(AppRoutes);
 
 app.use((error: Error, request: express.Request, response: express.Response) => {
     return response.status(500).send({ message: error.message, errors: [] })

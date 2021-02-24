@@ -17,10 +17,7 @@ export class UserController {
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)
@@ -37,10 +34,7 @@ export class UserController {
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)
@@ -66,10 +60,7 @@ export class UserController {
                 return resolve({ status: 200, response: result });
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)
@@ -103,10 +94,7 @@ export class UserController {
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)
@@ -127,29 +115,23 @@ export class UserController {
                 const errors = await validate(bitcoinTransfer);
                 if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
 
-                if (user.bitcoinAmount < bitcoinTransfer.amount && bitcoinTransfer.action === "sell")
+                const bitcoinPriceRepo = getRepository(BitcoinPrice);
+                const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] });
+                if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
+                if ((user.bitcoinAmount * bitcoin.price) < bitcoinTransfer.amount && bitcoinTransfer.action === "sell")
                     throw { name: Constants.INSUFFICIENT_BALANCE, field: "amount" };
 
-
-                const bitcoinPriceRepo = getRepository(BitcoinPrice);
-                const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
-                if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
-
-
                 if (bitcoinTransfer.action === "sell")
-                    user.bitcoinAmount = ((user.bitcoinAmount) - (bitcoinTransfer.amount))
+                    user.bitcoinAmount = ((user.bitcoinAmount) - (bitcoinTransfer.amount * bitcoin.price));
                 if (bitcoinTransfer.action === "buy")
-                    user.bitcoinAmount = ((user.bitcoinAmount) + (bitcoinTransfer.amount));
+                    user.bitcoinAmount = ((user.bitcoinAmount) + (bitcoinTransfer.amount / bitcoin.price));
 
                 await user.save();
                 const result = await bitcoinTransferRepo.save({ ...bitcoinTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
-                return resolve({ status: 200, response: result })
+                return resolve({ status: 200, response: result });
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)
@@ -173,10 +155,7 @@ export class UserController {
                 return resolve({ status: 200, response: { ...result, total_balance: totalBalance } })
             } catch (error) {
                 const apiError = FormatApiError(error);
-                return resolve({
-                    status: apiError.code,
-                    response: apiError.body,
-                });
+                return resolve({ status: apiError.code, response: apiError.body });
             }
         });
         return response.status((await promise).status).send((await promise).response)

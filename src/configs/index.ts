@@ -6,11 +6,10 @@ const AppConfig = {
     environment: process.env.NODE_ENV,
     appPort: process.env.APP_PORT,
     hostname: process.env.APP_HOST,
-    appName: process.env.APP_NAME,
-    conversionBTCprice: process.env.CONVERSION_BTC_PRICE
+    appName: process.env.APP_NAME
 }
 
-const DatabaseConfig = (environment: string = "development") => {
+const DatabaseConfig = (environment: string) => {
     environment = environment.toUpperCase();
     return {
         type: process.env.DB_DRIVER as "postgres",
