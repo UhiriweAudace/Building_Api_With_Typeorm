@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+    database:
+        container_name: substrata-database
+        image: postgres:11-alpine
+        tty: true
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_DB: dev_substrata
+            POSTGRES_PASSWORD: substrata987
+            PGDATA: /tmp
+        volumes:
+            - db-data:/var/lib/postgresql
+        networks:
+            - backend
+        restart: unless-stopped
+    api-server:
+        container_name: substrata_api
+        build:
+            context: .
+            dockerfile: ./Dockerfile.dev
+        image: substrata_api
+        tty: true
+        environment:
+            NODE_ENV: development
+            DB_DEVELOPMENT_USERNAME: postgres
+            DB_DEVELOPMENT_NAME: dev_substrata
+            DB_DEVELOPMENT_PASSWORD: substrata987
+            DB_DEVELOPMENT_HOST: database
+        command: ["yarn", "run", "dev"]
+        volumes:
+            - ./:/opt/app
+            - /opt/app/node_modules
+        ports:
+            - "5000:5000"
+        networks:
+            - backend
+        depends_on:
+            - database
+        restart: unless-stopped
+networks:
+    backend:
+        name: substrata-backend
+        driver: bridge
+volumes:
+    db-data:
+        name: substrata-database
+        driver: local

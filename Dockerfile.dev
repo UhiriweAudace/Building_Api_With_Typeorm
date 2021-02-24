@@ -1,0 +1,10 @@
+FROM node:12-alpine
+
+# Install yarn globally
+RUN npm install -g yarn --force
+
+WORKDIR /opt/app
+
+COPY . /opt/app
+
+RUN yarn install

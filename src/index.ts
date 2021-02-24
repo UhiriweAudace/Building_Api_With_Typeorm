@@ -12,6 +12,10 @@ app.use(express.json());
 
 app.use(AppRoutes);
 
+app.get("/api", (request, response) => {
+    return response.status(200).send({ message: 'Welcome to substrata Api' })
+});
+
 app.use((error: Error, request: express.Request, response: express.Response) => {
     return response.status(500).send({ message: error.message, errors: [] })
 })
