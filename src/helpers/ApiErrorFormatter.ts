@@ -2,7 +2,7 @@
 import { error as E } from "./Constants";
 
 /**
- * This method format the API Error Message
+ * This method format the API Error
  * It accepts the error object.
  * @param   { String                     } error
  * @returns   { Object(code, body   } 
@@ -27,7 +27,7 @@ export const FormatApiError = error => {
 
     }
 
-    // Returns 500 the error can not be resolved
+    // Returns 500 for errors which can not be resolved
     return { code: 500, body: { message: E.INTERNAL_SERVER_ERROR, errors: FormatValidationError(error) } };
 };
 
