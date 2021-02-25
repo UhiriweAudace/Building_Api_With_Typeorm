@@ -1,5 +1,5 @@
 
-import { error as E } from "./Constants";
+import { Constants as E } from "@helpers/index";
 
 /**
  * This method format the API Error
@@ -27,7 +27,7 @@ export const FormatApiError = error => {
 
     }
 
-    // Returns 500 for errors which can not be resolved
+    // Returns 500 for errors uncatched
     return { code: 500, body: { message: E.INTERNAL_SERVER_ERROR, errors: FormatValidationError(error) } };
 };
 

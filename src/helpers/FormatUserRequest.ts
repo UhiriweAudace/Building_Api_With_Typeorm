@@ -13,9 +13,10 @@ interface IErrorInfo { path: string, message: string }
 export const FormatUserRequest = (data, required = [], optional = []) => {
     const values = new Object(data);
     let fieldErrors: IErrorInfo[] = [];
-    let error: IErrorInfo
+
     required.forEach(field => {
         if (!Object.keys(data).includes(field)) {
+            let error: IErrorInfo = { path: "", message: "" }
             error.path = field;
             error.message = ` ${field} is required`;
             fieldErrors.push(error)
@@ -23,9 +24,10 @@ export const FormatUserRequest = (data, required = [], optional = []) => {
     });
 
     Object.keys(data).forEach((field) => {
-        if (!required.includes(field) || !optional.includes(field)) {
+        if (!required.includes(field) && !optional.includes(field)) {
+            let error: IErrorInfo = { path: "", message: "" }
             error.path = field;
-            error.message = `This field "${field}" is not allowed to be a part of this request`;
+            error.message = `This field  is not allowed to be a part of this request`;
             fieldErrors.push(error)
         }
     });

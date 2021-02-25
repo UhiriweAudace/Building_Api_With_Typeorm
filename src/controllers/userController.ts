@@ -16,6 +16,7 @@ export class UserController {
                 const result = await userRepo.save(user).catch((err) => { throw new Error(err) });
                 return resolve({ status: 200, response: result })
             } catch (error) {
+                console.log("Error message:::\n", error)
                 const apiError = FormatApiError(error);
                 return resolve({ status: apiError.code, response: apiError.body });
             }
