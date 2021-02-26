@@ -27,5 +27,7 @@ initConnection().then(() => {
         () => console.log(`Substrata Api is running on port ${AppConfig.appPort}`)
     );
 }).catch(error => {
+    console.log(error.message)
     process.exit(1);
 });
+

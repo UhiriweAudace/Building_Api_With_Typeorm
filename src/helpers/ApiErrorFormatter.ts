@@ -1,6 +1,10 @@
 
 import { Constants as E } from "@helpers/index";
 
+interface IDBError { code: string, detail: string }
+interface IDBErrorRespInfo { field: string, message: string }
+interface IDBErrorResponse { status: number, response: IDBErrorRespInfo }
+
 /**
  * This method format the API Error,
  * It accepts the error object.
@@ -22,6 +26,9 @@ export const FormatApiError = (error: any): { code: number, body: object } => {
 
         case E.INSUFFICIENT_BALANCE:
             return { code: 422, body: { message: error.name, field: error.field } };
+
+        case 'QueryFailedError':
+            return { code: FormatDatabaseError(error).status, body: { errors: FormatDatabaseError(error).response } };
     }
 
     // Returns 500 for errors uncatched
@@ -54,3 +61,18 @@ const FormatValidationError = (response: any) => {
         });
     });
 };
+
+const FormatDatabaseError = (error: IDBError): IDBErrorResponse => {
+    if (error.code === '23505') {
+        const field = error.detail.split(/[\W]+/i)
+        return {
+            status: 409,
+            response: {
+                field: field[1],
+                message: `${field[2]} is already taken.` || null,
+            }
+        }
+    }
+
+    return { status: 500, response: { field: "unknown", message: "something went wrong!" } }
+}

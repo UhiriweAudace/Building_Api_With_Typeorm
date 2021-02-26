@@ -13,7 +13,7 @@ const initConnection = async (): Promise<Connection> => {
         entities: [User, UsdTransfer, BitcoinPrice, BitcoinTransfer],
         synchronize: true,
         logging: false
-    })
+    }).catch((err) => { throw new Error(err) });
 };
 
 export {

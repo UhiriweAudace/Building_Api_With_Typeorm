@@ -4,16 +4,18 @@ import { validate } from "class-validator";
 import { v4 as uuid } from "uuid";
 import { BitcoinPrice, BitcoinTransfer, UsdTransfer, User } from "@database/";
 import { FormatUserRequest, FormatApiError, Constants } from "@helpers/index";
+
+interface IApiResponse { status: number, response: any }
 export class UserController {
     static async signUp(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 const values = FormatUserRequest(request.body, ["name", "username", "email"]);
                 const userRepo = getRepository(User)
                 const user = userRepo.create(values);
                 const errors = await validate(user);
                 if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
-                const result = await userRepo.save(user).catch((err) => { throw new Error(err) });
+                const result = await userRepo.save(user).catch((err) => { throw err });
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
@@ -24,7 +26,7 @@ export class UserController {
     }
 
     static async getUserDetails(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 FormatUserRequest(request.params, ["id"])
                 const userRepo = getRepository(User)
@@ -41,10 +43,10 @@ export class UserController {
     }
 
     static async updateUserDetails(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 FormatUserRequest(request.params, ["id"])
-                const values = FormatUserRequest(request.body, [])
+                FormatUserRequest(request.body, [], ["name", "username", "email"])
                 const userRepo = getRepository(User)
                 const user = await userRepo.findOne({ where: { id: request.params.id } })
                     .catch(() => { console.log(Constants.DATA_NOT_FOUND) });
@@ -67,7 +69,7 @@ export class UserController {
     }
 
     static async createUSDTransaction(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 FormatUserRequest(request.params, ["userId"]);
                 const values = FormatUserRequest(request.body, ["action", "amount"]);
@@ -89,7 +91,7 @@ export class UserController {
                 if (usdTransfer.action === "deposit")
                     user.usdBalance = ((user.usdBalance) + (usdTransfer.amount));
 
-                await user.save();
+                await user.save().catch((err) => { throw new Error(err) });
                 const result = await usdTransferRepo.save({ ...usdTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
                 return resolve({ status: 200, response: result })
             } catch (error) {
@@ -101,7 +103,7 @@ export class UserController {
     }
 
     static async createBitcoinTransaction(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 FormatUserRequest(request.params, ["userId"]);
                 const values = FormatUserRequest(request.body, ["action", "amount"]);
@@ -138,21 +140,21 @@ export class UserController {
     }
 
     static async getUserBalance(request: Request, response: Response) {
-        const promise: Promise<{ status: number, response: any }> = new Promise(async (resolve, reject) => {
+        const promise: Promise<IApiResponse> = new Promise(async (resolve, reject) => {
             try {
                 FormatUserRequest(request.params, ["userId"])
                 const userRepo = getRepository(User)
-                const result = await userRepo.findOne({ where: { id: request.params.userId }, select: ["id", "name", "usdBalance", "bitcoinAmount", "updatedAt"] })
+                const user = await userRepo.findOne({ where: { id: request.params.userId }, select: ["id", "name", "usdBalance", "bitcoinAmount", "updatedAt"] })
                     .catch(() => console.log(Constants.DATA_NOT_FOUND));
-                if (!result) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
+                if (!user) throw { name: Constants.DATA_NOT_FOUND, field: "User" }
 
                 const bitcoinPriceRepo = getRepository(BitcoinPrice);
                 const bitcoin = await bitcoinPriceRepo.findOne({ select: ["id", "price", "createdAt", "updatedAt"] })
                 if (!bitcoin) throw { name: Constants.DATA_NOT_FOUND, field: "Bitcoin price -" }
 
                 const conversionPrice = bitcoin.price;
-                const totalBalance = ((result.usdBalance) + (result.bitcoinAmount * conversionPrice))
-                return resolve({ status: 200, response: { ...result, total_balance: totalBalance } })
+                const totalBalance = ((user.usdBalance) + (user.bitcoinAmount * conversionPrice))
+                return resolve({ status: 200, response: { ...user, total_balance: `$${totalBalance}` } })
             } catch (error) {
                 const apiError = FormatApiError(error);
                 return resolve({ status: apiError.code, response: apiError.body });
