@@ -1,8 +1,10 @@
-export const error = {
+interface IError { [x: string]: string };
+
+export const error: IError = {
     DATA_NOT_FOUND: 'data not found',
     INVALID_REQUEST_FORMAT: 'Invalid request format',
     INVALID_REQUEST_DATA: 'Invalid request data',
-    INSUFFICIENT_BALANCE:"Insufficient balance",
+    INSUFFICIENT_BALANCE: "Insufficient balance",
     INTERNAL_SERVER_ERROR: 'Internal server error',
 
 
