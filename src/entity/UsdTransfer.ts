@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, ManyToOne } from "typeorm";
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, ManyToOne, Generated } from "typeorm";
 import { IsString, IsNotEmpty, IsInt, Matches } from "class-validator"
 import { v4 as uuid } from "uuid";
 
@@ -8,7 +8,8 @@ enum Action { withdraw = "withdraw", deposit = "deposit" }
 @Entity("UsdTransfers")
 export class UsdTransfer extends BaseEntity {
 
-  @PrimaryColumn({ type: "uuid", default: uuid(), nullable: false })
+  @PrimaryColumn({ type: "uuid", nullable: false })
+  @Generated("uuid")
   id: string;
 
   @Column({ type: "double precision", nullable: false })

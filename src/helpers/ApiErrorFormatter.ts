@@ -69,7 +69,7 @@ const FormatDatabaseError = (error: IDBError): IDBErrorResponse => {
             status: 409,
             response: {
                 field: field[1],
-                message: `${field[2]} is already taken.` || null,
+                message: `That ${field[1]} is already taken.` || null,
             }
         }
     }
