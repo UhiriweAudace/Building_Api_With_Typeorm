@@ -1,14 +1,14 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, Unique, OneToMany } from "typeorm";
-import { v4 as uuid } from "uuid";
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, Unique, OneToMany, Generated } from "typeorm";
 import { IsString, IsNotEmpty, MinLength, IsEmail, IsAlphanumeric } from "class-validator"
 import { UsdTransfer } from "@entity/UsdTransfer"
 import { BitcoinTransfer } from "@entity/BitcoinTransfer";
 
 @Entity("Users")
-@Unique(["username"])
+@Unique(["username", "email"])
 export class User extends BaseEntity {
 
-    @PrimaryColumn({ type: "uuid", default: uuid(), nullable: false })
+    @PrimaryColumn({ type: "uuid", nullable: false })
+    @Generated("uuid")
     id: string;
 
     @Column({ nullable: false })
@@ -24,7 +24,7 @@ export class User extends BaseEntity {
     @IsNotEmpty()
     username: string;
 
-    @Column({ nullable: false })
+    @Column({ unique: true, nullable: false })
     @IsString()
     @IsEmail({}, { message: "Email must be valid" })
     email: string;
