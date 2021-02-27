@@ -12,7 +12,7 @@ export class UserController {
             try {
                 const values = FormatUserRequest(request.body, ["name", "username", "email"]);
                 const userRepo = getRepository(User)
-                const user = userRepo.create(values);
+                const user = userRepo.create(<object>Object.assign(values, { usdBalance: 0, bitcoinAmount: 0 }));
                 const errors = await validate(user);
                 if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
                 const result = await userRepo.save(user).catch((err) => { throw err });
@@ -92,7 +92,8 @@ export class UserController {
                     user.usdBalance = ((user.usdBalance) + (usdTransfer.amount));
 
                 await user.save().catch((err) => { throw new Error(err) });
-                const result = await usdTransferRepo.save({ ...usdTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
+                usdTransfer.user = user;
+                const result = await usdTransferRepo.save(usdTransfer).catch((err) => { throw new Error(err) });
                 return resolve({ status: 200, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
@@ -124,12 +125,13 @@ export class UserController {
                     throw { name: Constants.INSUFFICIENT_BALANCE, field: "amount" };
 
                 if (bitcoinTransfer.action === "sell")
-                    user.bitcoinAmount = ((user.bitcoinAmount) - (bitcoinTransfer.amount * bitcoin.price));
+                    user.bitcoinAmount = ((user.bitcoinAmount * bitcoin.price) - (bitcoinTransfer.amount))/bitcoin.price;
                 if (bitcoinTransfer.action === "buy")
                     user.bitcoinAmount = ((user.bitcoinAmount) + (bitcoinTransfer.amount / bitcoin.price));
-
-                await user.save();
-                const result = await bitcoinTransferRepo.save({ ...bitcoinTransfer, id: uuid(), user: user }).catch((err) => { throw new Error(err) });
+                
+                await user.save().catch((err) => { throw new Error(err) });
+                bitcoinTransfer.user = user;
+                const result = await bitcoinTransferRepo.save(bitcoinTransfer).catch((err) => { throw new Error(err) });
                 return resolve({ status: 200, response: result });
             } catch (error) {
                 const apiError = FormatApiError(error);

@@ -1,6 +1,5 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, ManyToOne, Generated } from "typeorm";
-import { IsString, IsNotEmpty, IsInt, Matches } from "class-validator"
-import { v4 as uuid } from "uuid";
+import { IsString, IsNotEmpty, IsInt, Matches, Min } from "class-validator"
 
 import { User } from "./User"
 enum Action { withdraw = "withdraw", deposit = "deposit" }
@@ -15,6 +14,7 @@ export class UsdTransfer extends BaseEntity {
   @Column({ type: "double precision", nullable: false })
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
   amount: bigint;
 
   @Column({ type: "simple-enum", enum: Action, nullable: false, })
