@@ -16,7 +16,7 @@ export class UserController {
                 const errors = await validate(user);
                 if (errors.length) throw { name: Constants.INVALID_REQUEST_DATA, errors: errors };
                 const result = await userRepo.save(user).catch((err) => { throw err });
-                return resolve({ status: 200, response: result })
+                return resolve({ status: 201, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
                 return resolve({ status: apiError.code, response: apiError.body });
@@ -94,7 +94,7 @@ export class UserController {
                 await user.save().catch((err) => { throw new Error(err) });
                 usdTransfer.user = user;
                 const result = await usdTransferRepo.save(usdTransfer).catch((err) => { throw new Error(err) });
-                return resolve({ status: 200, response: result })
+                return resolve({ status: 201, response: result })
             } catch (error) {
                 const apiError = FormatApiError(error);
                 return resolve({ status: apiError.code, response: apiError.body });
@@ -132,7 +132,7 @@ export class UserController {
                 await user.save().catch((err) => { throw new Error(err) });
                 bitcoinTransfer.user = user;
                 const result = await bitcoinTransferRepo.save(bitcoinTransfer).catch((err) => { throw new Error(err) });
-                return resolve({ status: 200, response: result });
+                return resolve({ status: 201, response: result });
             } catch (error) {
                 const apiError = FormatApiError(error);
                 return resolve({ status: apiError.code, response: apiError.body });
