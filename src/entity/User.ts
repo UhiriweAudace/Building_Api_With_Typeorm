@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryColumn, Unique, OneToMany, Generated } from "typeorm";
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryGeneratedColumn, Unique, OneToMany } from "typeorm";
 import { IsString, IsNotEmpty, MinLength, IsEmail, IsAlphanumeric, Min } from "class-validator"
 import { UsdTransfer } from "@entity/UsdTransfer"
 import { BitcoinTransfer } from "@entity/BitcoinTransfer";
@@ -7,8 +7,7 @@ import { BitcoinTransfer } from "@entity/BitcoinTransfer";
 @Unique(["username", "email"])
 export class User extends BaseEntity {
 
-    @PrimaryColumn({ type: "uuid", nullable: false })
-    @Generated("uuid")
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Column({ nullable: false })
