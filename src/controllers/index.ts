@@ -1,4 +1,2 @@
-import { UserController } from "@controllers/userController";
-import { BitcoinController } from "@controllers/bitcoinController";
-
-export { UserController, BitcoinController }
+export { UserController } from "@controllers/userController";
+export { BitcoinController } from "@controllers/bitcoinController";
